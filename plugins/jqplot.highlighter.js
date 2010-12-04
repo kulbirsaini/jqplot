@@ -86,6 +86,9 @@
         // prop: tooltipLocation
         // Where to position tooltip, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
         this.tooltipLocation = 'nw';
+        // prop: fixedTooltipPosition
+        // Tooltip should be at a fixed location or it should move with cursor
+        this.fixedTooltipPosition = false;
         // prop: fadeTooltip
         // true = fade in/out tooltip, flase = show/hide tooltip
         this.fadeTooltip = true;
@@ -288,46 +291,101 @@
         if (series.markerRenderer.show == true) { 
             ms = (series.markerRenderer.size + hl.sizeAdjust)/2;
         }
-        switch (hl.tooltipLocation) {
-            case 'nw':
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
-                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
-                break;
-            case 'n':
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
-                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - ms;
-                break;
-            case 'ne':
-                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
-                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
-                break;
-            case 'e':
-                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + ms;
-                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
-                break;
-            case 'se':
-                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
-                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
-                break;
-            case 's':
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
-                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + ms;
-                break;
-            case 'sw':
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
-                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
-                break;
-            case 'w':
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - ms;
-                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
-                break;
-            default: // same as 'nw'
-                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
-                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
-                break;
+
+        if (hl.fixedTooltipPosition) {
+            var grid = plot._gridPadding;
+            switch (hl.tooltipLocation) {
+                case 'nw':
+                    var x = grid.left + hl.tooltipOffset;
+                    var y = grid.top + hl.tooltipOffset;
+                    elem.css('left', x);
+                    elem.css('top', y);
+                    break;
+                case 'n':
+                    var x = (grid.left + (plot._plotDimensions.width - grid.right))/2 - elem.outerWidth(true)/2;
+                    var y = grid.top + hl.tooltipOffset;
+                    elem.css('left', x);
+                    elem.css('top', y);
+                    break;
+                case 'ne':
+                    var x = grid.right + hl.tooltipOffset;
+                    var y = grid.top + hl.tooltipOffset;
+                    elem.css({right:x, top:y});
+                    break;
+                case 'e':
+                    var x = grid.right + hl.tooltipOffset;
+                    var y = (grid.top + (plot._plotDimensions.height - grid.bottom))/2 - elem.outerHeight(true)/2;
+                    elem.css({right:x, top:y});
+                    break;
+                case 'se':
+                    var x = grid.right + hl.tooltipOffset;
+                    var y = grid.bottom + hl.tooltipOffset;
+                    elem.css({right:x, bottom:y});
+                    break;
+                case 's':
+                    var x = (grid.left + (plot._plotDimensions.width - grid.right))/2 - elem.outerWidth(true)/2;
+                    var y = grid.bottom + hl.tooltipOffset;
+                    elem.css({left:x, bottom:y});
+                    break;
+                case 'sw':
+                    var x = grid.left + hl.tooltipOffset;
+                    var y = grid.bottom + hl.tooltipOffset;
+                    elem.css({left:x, bottom:y});
+                    break;
+                case 'w':
+                    var x = grid.left + hl.tooltipOffset;
+                    var y = (grid.top + (plot._plotDimensions.height - grid.bottom))/2 - elem.outerHeight(true)/2;
+                    elem.css({left:x, top:y});
+                    break;
+                default:  // same as 'se'
+                    var x = grid.right - hl.tooltipOffset;
+                    var y = grid.bottom + hl.tooltipOffset;
+                    elem.css({right:x, bottom:y});
+                    break;
+            }
         }
-        elem.css('left', x);
-        elem.css('top', y);
+        else {
+            switch (hl.tooltipLocation) {
+                case 'nw':
+                    var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                    var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                    break;
+                case 'n':
+                    var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                    var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - ms;
+                    break;
+                case 'ne':
+                    var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
+                    var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                    break;
+                case 'e':
+                    var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + ms;
+                    var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                    break;
+                case 'se':
+                    var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
+                    var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
+                    break;
+                case 's':
+                    var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                    var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + ms;
+                    break;
+                case 'sw':
+                    var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                    var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
+                    break;
+                case 'w':
+                    var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - ms;
+                    var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                    break;
+                default: // same as 'nw'
+                    var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                    var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                    break;
+            }
+            elem.css('left', x);
+            elem.css('top', y);
+        }
         if (hl.fadeTooltip) {
             // Fix for stacked up animations.  Thnanks Trevor!
             elem.stop(true,true).fadeIn(hl.tooltipFadeSpeed);
